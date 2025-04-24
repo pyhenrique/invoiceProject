@@ -1,0 +1,36 @@
+CREATE TABLE a01_clientes (
+    A01_id_cliente INT IDENTITY(1,1) PRIMARY KEY,
+    A01_nome VARCHAR(255) NOT NULL,
+    A01_cpf_cnpj VARCHAR(18) NOT NULL UNIQUE,
+    A01_endereco VARCHAR(255) NOT NULL,
+    A01_telefone VARCHAR(15),
+    A01_email VARCHAR(100),
+    A01_data_cadastro DATETIME DEFAULT GETDATE(),
+    A01_credito DECIMAL(10,2) NOT NULL
+);
+CREATE TABLE a02_produto (
+    A02_id_produto INT IDENTITY(1,1) PRIMARY KEY,
+    A02_nome VARCHAR(50) NOT NULL,
+    A02_quantidade INT NOT NULL,
+    A02_preco DECIMAL(10,2) NOT NULL,
+    A02_codigo_do_produto VARCHAR(20) NOT NULL UNIQUE
+);
+
+CREATE TABLE a04_pedido (
+    A04_id_pedido INT IDENTITY(1,1) PRIMARY KEY,
+    A01_id_cliente INT NOT NULL,
+    A04_valor_total INT NOT NULL,
+    FOREIGN KEY (A01_id_cliente) REFERENCES a01_clientes(A01_id_cliente)
+);
+
+CREATE TABLE a03_item (
+    A03_id_item INT IDENTITY(1,1),
+    A04_id_pedido INT NOT NULL,
+    A02_id_produto INT NOT NULL,
+    A03_quantidade INT NOT NULL,
+    A03_preco_unitario DECIMAL(10,2) NOT NULL,
+    A03_subtotal AS (A03_quantidade * A03_preco_unitario) PERSISTED,
+    PRIMARY KEY (A03_id_item, A04_id_pedido, A02_id_produto),
+    FOREIGN KEY (A04_id_pedido) REFERENCES a04_pedido(A04_id_pedido),
+    FOREIGN KEY (A02_id_produto) REFERENCES a02_produto(A02_id_produto)
+);
