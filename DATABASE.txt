@@ -1,0 +1,567 @@
+CREATE DATABASE Banco_De_Dados_NF; 
+
+GO 
+
+ 
+
+USE Banco_De_Dados_NF; 
+
+GO 
+
+ 
+
+-- Tabela de Clientes 
+
+CREATE TABLE a01_cliente ( 
+
+    a01_codigo INT IDENTITY(1,1) PRIMARY KEY, 
+
+    a01_nome VARCHAR(100) NOT NULL, 
+
+    a01_cpf VARCHAR(14) UNIQUE NOT NULL, 
+
+    a01_email VARCHAR(100), 
+
+    a01_telefone VARCHAR(20), 
+
+    a01_endereco VARCHAR(200) 
+
+GO 
+
+ 
+
+-- Tabela de Produtos 
+
+CREATE TABLE a02_produto ( 
+
+    a02_codigo INT IDENTITY(1,1) PRIMARY KEY, 
+
+    a02_nome VARCHAR(100) NOT NULL, 
+
+    a02_preco DECIMAL(10,2) NOT NULL, 
+
+    a02_categoria VARCHAR(50)) 
+
+GO 
+
+ 
+
+-- Tabela de Pedidos 
+
+CREATE TABLE a04_pedido ( 
+
+    a04_codigo INT IDENTITY(1,1) PRIMARY KEY, 
+
+    a01_codigo_cliente INT NOT NULL, 
+
+    a04_data_pedido DATETIME DEFAULT GETDATE(), 
+
+    a04_valor_total DECIMAL(10,2), 
+
+    FOREIGN KEY (a01_codigo_cliente) REFERENCES a01_cliente(a01_codigo)) 
+
+GO 
+
+ 
+
+-- Tabela de Itens do Pedido 
+
+CREATE TABLE a03_item ( 
+
+    a03_codigo INT IDENTITY(1,1) PRIMARY KEY, 
+
+    a04_codigo INT NOT NULL, 
+
+    a02_codigo INT NOT NULL, 
+
+    a03_quantidade INT NOT NULL, 
+
+    a03_preco_unitario DECIMAL(10,2) NOT NULL, 
+
+    FOREIGN KEY (a04_codigo) REFERENCES a04_pedido(a04_codigo), 
+
+    FOREIGN KEY (a02_codigo) REFERENCES a02_produto(a02_codigo)) 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_inserir_cliente 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_inserir_cliente] 
+
+    @nome VARCHAR(100), 
+
+    @cpf VARCHAR(14), 
+
+    @email VARCHAR(100), 
+
+    @telefone VARCHAR(20), 
+
+    @endereco VARCHAR(200) 
+
+AS 
+
+BEGIN 
+
+    INSERT INTO a01_cliente (a01_nome, a01_cpf, a01_email, a01_telefone, a01_endereco) 
+
+    VALUES (@nome, @cpf, @email, @telefone, @endereco) 
+
+END 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_atualizar_cliente 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_atualizar_cliente] 
+
+    @codigo INT, 
+
+    @nome VARCHAR(100), 
+
+    @cpf VARCHAR(14), 
+
+    @email VARCHAR(100), 
+
+    @telefone VARCHAR(20), 
+
+    @endereco VARCHAR(200) 
+
+AS 
+
+BEGIN 
+
+    UPDATE a01_cliente 
+
+    SET a01_nome = @nome,  
+
+        a01_cpf = @cpf,  
+
+        a01_email = @email,  
+
+        a01_telefone = @telefone,  
+
+        a01_endereco = @endereco 
+
+    WHERE a01_codigo = @codigo 
+
+END 
+
+GO 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_deletar_cliente 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_deletar_cliente] 
+
+    @codigo INT 
+
+AS 
+
+BEGIN 
+
+    DELETE FROM a01_cliente WHERE a01_codigo = @codigo 
+
+END 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_listar_clientes 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_listar_clientes] 
+
+AS 
+
+BEGIN 
+
+    SELECT * FROM a01_cliente 
+
+END 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_inserir_produto 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_inserir_produto] 
+
+    @nome VARCHAR(100), 
+
+    @preco DECIMAL(10, 2), 
+
+    @categoria VARCHAR(50) 
+
+AS 
+
+BEGIN 
+
+    INSERT INTO a02_produto (a02_nome, a02_preco, a02_categoria) 
+
+    VALUES (@nome, @preco, @categoria) 
+
+END 
+
+GO 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_atualizar_produto 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_atualizar_produto] 
+
+    @codigo INT, 
+
+    @nome VARCHAR(100), 
+
+    @preco DECIMAL(10, 2), 
+
+    @categoria VARCHAR(50) 
+
+AS 
+
+BEGIN 
+
+    UPDATE a02_produto 
+
+    SET a02_nome = @nome,  
+
+        a02_preco = @preco,  
+
+        a02_categoria = @categoria 
+
+    WHERE a02_codigo = @codigo 
+
+END 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_deletar_produto 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_deletar_produto] 
+
+    @codigo INT 
+
+AS 
+
+BEGIN 
+
+    DELETE FROM a02_produto WHERE a02_codigo = @codigo 
+
+END 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_listar_produtos 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_listar_produtos] 
+
+AS 
+
+BEGIN 
+
+    SELECT * FROM a02_produto 
+
+END 
+
+GO 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_inserir_pedido 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_inserir_pedido] 
+
+    @codigo_cliente INT, 
+
+    @valor_total DECIMAL(10, 2) 
+
+AS 
+
+BEGIN 
+
+    INSERT INTO a04_pedido (a01_codigo_cliente, a04_data_pedido, a04_valor_total) 
+
+    VALUES (@codigo_cliente, GETDATE(), @valor_total) 
+
+END 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_atualizar_valor_pedido 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_atualizar_valor_pedido] 
+
+    @codigo_pedido INT, 
+
+    @novo_valor DECIMAL(10, 2) 
+
+AS 
+
+BEGIN 
+
+    UPDATE a04_pedido 
+
+    SET a04_valor_total = @novo_valor 
+
+    WHERE a04_codigo = @codigo_pedido 
+
+END 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_deletar_pedido 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_deletar_pedido] 
+
+    @codigo_pedido INT 
+
+AS 
+
+BEGIN 
+
+    DELETE FROM a04_pedido WHERE a04_codigo = @codigo_pedido 
+
+END 
+
+GO 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_listar_pedidos 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_listar_pedidos] 
+
+AS 
+
+BEGIN 
+
+    SELECT * FROM a04_pedido 
+
+END 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_inserir_item 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_inserir_item] 
+
+    @codigo_pedido INT, 
+
+    @codigo_produto INT, 
+
+    @quantidade INT, 
+
+    @preco_unitario DECIMAL(10, 2) 
+
+AS 
+
+BEGIN 
+
+    INSERT INTO a03_item (a04_codigo, a02_codigo, a03_quantidade, a03_preco_unitario) 
+
+    VALUES (@codigo_pedido, @codigo_produto, @quantidade, @preco_unitario) 
+
+END 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_atualizar_item 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_atualizar_item] 
+
+    @codigo_item INT, 
+
+    @quantidade INT, 
+
+    @preco_unitario DECIMAL(10, 2) 
+
+AS 
+
+BEGIN 
+
+    UPDATE a03_item 
+
+    SET a03_quantidade = @quantidade,  
+
+        a03_preco_unitario = @preco_unitario 
+
+    WHERE a03_codigo = @codigo_item 
+
+END 
+
+GO 
+
+ 
+
+ 
+
+ 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_deletar_item 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_deletar_item] 
+
+    @codigo_item INT 
+
+AS 
+
+BEGIN 
+
+    DELETE FROM a03_item WHERE a03_codigo = @codigo_item 
+
+END 
+
+GO 
+
+ 
+
+-- ============================================= 
+
+-- Procedure: sp_listar_itens_pedido 
+
+-- ============================================= 
+
+CREATE PROCEDURE [dbo].[sp_listar_itens_pedido] 
+
+    @codigo_pedido INT 
+
+AS 
+
+BEGIN 
+
+    SELECT * FROM a03_item WHERE a04_codigo = @codigo_pedido 
+
+END 
+
+GO 
