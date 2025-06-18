@@ -10,8 +10,9 @@ public class ModelCliente {
     
     public ModelCliente() {}
     
-     public int getA01_Codigo() {
-        return a01_codigo;
+    // Getters
+    public int getA01_Codigo() {
+       return a01_codigo;
     }
 
     public String getA01_Nome() {
@@ -34,6 +35,7 @@ public class ModelCliente {
         return a01_endereco;
     }
     
+     // Setters
     public void setA01_Codigo(int a01_codigo) {
         this.a01_codigo = a01_codigo;
     }
@@ -42,7 +44,7 @@ public class ModelCliente {
         this.a01_nome = a01_nome;
     }
 
-    public void setA01_Cpf(String a01_cpf) {  // setCpf() em vez de setCpfCnpj()
+    public void setA01_Cpf(String a01_cpf) { 
         this.a01_cpf = a01_cpf;
     }
 
