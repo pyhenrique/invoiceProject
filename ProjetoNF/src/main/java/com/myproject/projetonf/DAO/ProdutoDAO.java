@@ -87,20 +87,24 @@ public class ProdutoDAO {
         return produto;
     }
     
-    public double buscarPrecoPorCodigo(int codigoProduto) {
-    String sql = "SELECT preco_unitario FROM produtos WHERE codigo = ?";
+public double buscarPrecoPorCodigo(int codigoProduto) {
+    String sql = "SELECT a02_preco FROM a02_produto WHERE a02_codigo = ?";
+    
     try (Connection conn = Conexao.conectar();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
         
         stmt.setInt(1, codigoProduto);
-        ResultSet rs = stmt.executeQuery();
         
-        if (rs.next()) {
-            return rs.getDouble("preco_unitario"); // Retorna o preço do BD
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble("a02_preco");
+            } else {
+                throw new RuntimeException("Produto não encontrado: " + codigoProduto);
+            }
         }
+        
     } catch (SQLException e) {
-        e.printStackTrace();
+        throw new RuntimeException("Falha ao buscar preço do produto " + codigoProduto, e);
     }
-    return 0.0; // Ou lance uma exceção se preferir
 }
 }

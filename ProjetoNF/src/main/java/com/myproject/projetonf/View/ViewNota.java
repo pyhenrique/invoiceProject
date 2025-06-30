@@ -6,11 +6,13 @@ package com.myproject.projetonf.View;
 
 import com.myproject.projetonf.Controller.*;
 import com.myproject.projetonf.Model.*;
+import java.awt.Component;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class ViewNota extends javax.swing.JFrame {
 
@@ -368,6 +370,18 @@ public class ViewNota extends javax.swing.JFrame {
         txtNomeCliente.setEditable(false);
         txtCpfCliente.setEditable(false);
         txtEnderecoCliente.setEditable(false);
+        
+// Adicione no método configurarComponentes():
+tblItensNota.setDefaultRenderer(Double.class, new DefaultTableCellRenderer() {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, 
+           boolean isSelected, boolean hasFocus, int row, int column) {
+        if (value instanceof Double) {
+            value = String.format("R$ %.2f", (Double) value);
+        }
+        return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+    }
+});
     }
 
     private void carregarClientesNoCombo() {
@@ -601,11 +615,11 @@ private void carregarItensNota(int numeroNota) {
             
             // Adiciona uma linha na tabela para cada item
             tableModel.addRow(new Object[]{
-                item.getA03_Codigo(), // Código do item
-                produto != null ? produto.getA02_Nome() : "Produto não encontrado", // Nome do produto
-                item.getA03_Quantidade(), // Quantidade
-                String.format("%.2f", item.getA03_Preco_Unitario()), // Preço unitário formatado
-                String.format("%.2f", item.getA03_Quantidade() * item.getA03_Preco_Unitario()) // Total do item
+                item.getA03_Codigo(),
+                produto != null ? produto.getA02_Nome() : "Produto não encontrado",
+                item.getA03_Quantidade(),
+                item.getA03_Preco_Unitario(), // Mantém como Double
+                item.getA03_Quantidade() * item.getA03_Preco_Unitario() // Mantém como Double
             });
         }
     } catch (Exception e) {
