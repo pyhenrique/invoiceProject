@@ -398,7 +398,74 @@ tblItensNota.setDefaultRenderer(Double.class, new DefaultTableCellRenderer() {
     }
     
     private void btnAlterarNotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarNotaActionPerformed
-        // TODO add your handling code here:
+    if (txtNumeroNota.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, 
+            "Consulte uma nota antes de alterar!", 
+            "Aviso", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    try {
+        // 1. Obter e validar número da nota
+        int numeroNota;
+        try {
+            numeroNota = Integer.parseInt(txtNumeroNota.getText().trim());
+        } catch (NumberFormatException e) {
+            throw new Exception("Número da nota inválido!");
+        }
+
+        // 2. Obter a nota atual
+        ModelPedido nota = pedidoController.consultarPedido(numeroNota);
+        if (nota == null) {
+            throw new Exception("Nota não encontrada!");
+        }
+
+        // 3. Validar cliente selecionado
+        if (cmbCodigoCliente.getSelectedIndex() == -1) {
+            throw new Exception("Selecione um cliente!");
+        }
+
+        // 4. Processar código do cliente
+        String clienteSelecionado = (String) cmbCodigoCliente.getSelectedItem();
+        int novoCodigoCliente;
+        try {
+            novoCodigoCliente = Integer.parseInt(clienteSelecionado.split(" - ")[0].trim());
+        } catch (Exception e) {
+            throw new Exception("Código do cliente inválido!");
+        }
+
+        // 5. Processar valor total (com tratamento para vírgula decimal)
+        double novoValorTotal;
+        try {
+            String valorStr = txtTotalNota.getText().trim().replace(",", ".");
+            novoValorTotal = Double.parseDouble(valorStr);
+        } catch (NumberFormatException e) {
+            throw new Exception("Valor total inválido!\nUse números com . ou , para decimais");
+        }
+
+        // 6. Validar data
+        String dataNota = txtDataNota.getText().trim();
+        if (dataNota.isEmpty()) {
+            throw new Exception("Data da nota não pode estar vazia!");
+        }
+
+        // 7. Atualizar o objeto nota
+        nota.setA01_Codigo_Cliente(novoCodigoCliente);
+        nota.setA04_Valor_Total(novoValorTotal);
+        nota.setA04_Data_Pedido(dataNota);
+
+        // 8. Chamar o controller para atualizar
+        pedidoController.atualizarPedido(nota);
+        
+        JOptionPane.showMessageDialog(this, 
+            "Nota atualizada com sucesso!", 
+            "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, 
+            "Erro ao atualizar nota:\n" + e.getMessage(), 
+            "Erro", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnAlterarNotaActionPerformed
 
     private void txtNumeroNotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNumeroNotaActionPerformed
@@ -566,6 +633,7 @@ private void preencherCamposNota(ModelPedido nota) {
     JOptionPane.showMessageDialog(this, "Nota inválida!");
     return;
     }
+    
         String data = nota.getA04_Data_Pedido();
     if (data == null || data.trim().isEmpty()) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -582,6 +650,14 @@ private void preencherCamposNota(ModelPedido nota) {
         txtNomeCliente.setText(cliente.getA01_Nome());
         txtCpfCliente.setText(cliente.getA01_Cpf());
         txtEnderecoCliente.setText(cliente.getA01_Endereco());
+        
+        String clienteComboText = cliente.getA01_Codigo() + " - " + cliente.getA01_Nome();
+        for (int i = 0; i < cmbCodigoCliente.getItemCount(); i++) {
+            if (cmbCodigoCliente.getItemAt(i).equals(clienteComboText)) {
+                cmbCodigoCliente.setSelectedIndex(i);
+                break;
+            }
+        }
     } else {
         // Limpa os campos se o cliente não for encontrado (opcional)
         txtNomeCliente.setText("");
