@@ -2,6 +2,8 @@ package com.myproject.projetonf.DAO;
 
 import com.myproject.projetonf.Model.ModelPedido;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
 
 public class PedidoDAO {
@@ -37,6 +39,9 @@ public void atualizarPedido(int codigo, int codigoCliente, String data, double v
         try (Connection conn = Conexao.conectar();
              CallableStatement stmt = conn.prepareCall("{CALL dbo.sp_atualizar_pedido(?, ?, ?, ?)}")) {
             
+            ModelPedido temp = new ModelPedido();
+            temp.setA04_Data_Pedido(data);
+            
             stmt.setInt(1, codigo);
             stmt.setInt(2, codigoCliente);
             stmt.setString(3, data);
@@ -44,9 +49,8 @@ public void atualizarPedido(int codigo, int codigoCliente, String data, double v
             stmt.execute();
             
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erro ao atualizar pedido", e);
-        }
+        throw new RuntimeException("Erro no banco ao atualizar pedido", e);
+    }
     }
 
     public ModelPedido consultarPedido(int codigo) {

@@ -7,6 +7,7 @@ package com.myproject.projetonf.View;
 import com.myproject.projetonf.Controller.*;
 import com.myproject.projetonf.Model.*;
 import java.awt.Component;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.*;
@@ -74,6 +75,9 @@ public class ViewNota extends javax.swing.JFrame {
         btnConsultarItem = new javax.swing.JButton();
         jLabel14 = new javax.swing.JLabel();
         txtTotalNota = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -204,6 +208,12 @@ public class ViewNota extends javax.swing.JFrame {
         jLabel14.setFont(new java.awt.Font("Comic Sans MS", 0, 24)); // NOI18N
         jLabel14.setText("Total da Nota");
 
+        jButton1.setText("jButton1");
+
+        jButton2.setText("jButton1");
+
+        jButton3.setText("jButton1");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -271,7 +281,13 @@ public class ViewNota extends javax.swing.JFrame {
                         .addGap(230, 230, 230)
                         .addComponent(jLabel8))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(230, 230, 230)
+                        .addContainerGap()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(113, 113, 113)
                         .addComponent(jLabel7))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(76, 76, 76)
@@ -294,10 +310,19 @@ public class ViewNota extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addGap(30, 30, 30)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addGap(30, 30, 30))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jButton1)
+                                    .addComponent(jButton2)
+                                    .addComponent(jButton3))
+                                .addGap(53, 53, 53)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(txtDataNota, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -398,73 +423,63 @@ tblItensNota.setDefaultRenderer(Double.class, new DefaultTableCellRenderer() {
     }
     
     private void btnAlterarNotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarNotaActionPerformed
-    if (txtNumeroNota.getText().trim().isEmpty()) {
-        JOptionPane.showMessageDialog(this, 
-            "Consulte uma nota antes de alterar!", 
-            "Aviso", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
     try {
-        // 1. Obter e validar número da nota
-        int numeroNota;
-        try {
-            numeroNota = Integer.parseInt(txtNumeroNota.getText().trim());
-        } catch (NumberFormatException e) {
-            throw new Exception("Número da nota inválido!");
+        // 1. Validação básica
+        if (txtNumeroNota.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Consulte uma nota antes de alterar!", 
+                "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
-        // 2. Obter a nota atual
-        ModelPedido nota = pedidoController.consultarPedido(numeroNota);
-        if (nota == null) {
-            throw new Exception("Nota não encontrada!");
-        }
-
-        // 3. Validar cliente selecionado
-        if (cmbCodigoCliente.getSelectedIndex() == -1) {
-            throw new Exception("Selecione um cliente!");
-        }
-
-        // 4. Processar código do cliente
-        String clienteSelecionado = (String) cmbCodigoCliente.getSelectedItem();
-        int novoCodigoCliente;
-        try {
-            novoCodigoCliente = Integer.parseInt(clienteSelecionado.split(" - ")[0].trim());
-        } catch (Exception e) {
-            throw new Exception("Código do cliente inválido!");
-        }
-
-        // 5. Processar valor total (com tratamento para vírgula decimal)
-        double novoValorTotal;
-        try {
-            String valorStr = txtTotalNota.getText().trim().replace(",", ".");
-            novoValorTotal = Double.parseDouble(valorStr);
-        } catch (NumberFormatException e) {
-            throw new Exception("Valor total inválido!\nUse números com . ou , para decimais");
-        }
-
-        // 6. Validar data
-        String dataNota = txtDataNota.getText().trim();
-        if (dataNota.isEmpty()) {
-            throw new Exception("Data da nota não pode estar vazia!");
-        }
-
-        // 7. Atualizar o objeto nota
-        nota.setA01_Codigo_Cliente(novoCodigoCliente);
-        nota.setA04_Valor_Total(novoValorTotal);
-        nota.setA04_Data_Pedido(dataNota);
-
-        // 8. Chamar o controller para atualizar
-        pedidoController.atualizarPedido(nota);
+        // 2. Obter dados do formulário
+        int numeroNota = Integer.parseInt(txtNumeroNota.getText().trim());
         
-        JOptionPane.showMessageDialog(this, 
-            "Nota atualizada com sucesso!", 
+        // 3. Verificar se há itens na nota
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this,
+                "A nota deve conter pelo menos um item!",
+                "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 4. Obter cliente selecionado
+        if (cmbCodigoCliente.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Selecione um cliente!",
+                "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String clienteSelecionado = cmbCodigoCliente.getSelectedItem().toString();
+        int codigoCliente = Integer.parseInt(clienteSelecionado.split(" - ")[0]);
+
+        // 5. Calcular valor total (atualizado)
+        atualizarTotalNota();
+        double valorTotal = Double.parseDouble(txtTotalNota.getText().replace(",", "."));
+
+        // 6. Criar objeto de pedido
+        ModelPedido pedido = new ModelPedido();
+        pedido.setA04_Codigo(numeroNota);
+        pedido.setA01_Codigo_Cliente(codigoCliente);
+        pedido.setA04_Data_Pedido(txtDataNota.getText().trim());
+        pedido.setA04_Valor_Total(valorTotal);
+
+        // 7. Executar atualização
+        pedidoController.atualizarPedido(pedido);
+        
+        JOptionPane.showMessageDialog(this,
+            "Nota atualizada com sucesso!",
             "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, 
-            "Erro ao atualizar nota:\n" + e.getMessage(), 
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this,
+            "Erro de formato numérico!\nVerifique os campos.",
             "Erro", JOptionPane.ERROR_MESSAGE);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Erro ao atualizar nota:\n" + e.getMessage(),
+            "Erro", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace(); // Para debug
     }
     }//GEN-LAST:event_btnAlterarNotaActionPerformed
 
@@ -615,6 +630,7 @@ try {
             if (nota != null) {
                 preencherCamposNota(nota);
                 carregarItensNota(numeroNota);
+                atualizarTotalNota();
             } else {
                 JOptionPane.showMessageDialog(this, "Nota não encontrada!", 
                     "Informação", JOptionPane.INFORMATION_MESSAGE);
@@ -629,6 +645,18 @@ try {
         }
     }//GEN-LAST:event_btnConsultarNotaActionPerformed
 private void preencherCamposNota(ModelPedido nota) {
+    SimpleDateFormat sdfBD = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    SimpleDateFormat sdfExibicao = new SimpleDateFormat("dd/MM/yyyy");
+    
+    try {
+        // Converte a data do BD para exibição
+        Date data = sdfBD.parse(nota.getA04_Data_Pedido());
+        txtDataNota.setText(sdfExibicao.format(data));
+    } catch (ParseException e) {
+        // Se já estiver no formato de exibição
+        txtDataNota.setText(nota.getA04_Data_Pedido());
+    }
+    
     if (nota == null) {
     JOptionPane.showMessageDialog(this, "Nota inválida!");
     return;
@@ -927,6 +955,9 @@ atualizarTotalNota();
     private javax.swing.JButton btnRemoverItem;
     private javax.swing.JButton btnRemoverNota;
     private javax.swing.JComboBox<String> cmbCodigoCliente;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

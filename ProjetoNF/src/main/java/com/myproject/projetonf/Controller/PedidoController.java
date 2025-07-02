@@ -29,12 +29,16 @@ public class PedidoController {
         return pedidoDAO.consultarPedido(codigo);
     }
     
-        public void atualizarPedido(ModelPedido pedido) {
-        pedidoDAO.atualizarPedido(
-            pedido.getA04_Codigo(),
-            pedido.getA01_Codigo_Cliente(),
-            pedido.getA04_Data_Pedido(),
-            pedido.getA04_Valor_Total()
-        );
+public void atualizarPedido(ModelPedido pedido) {
+    // Validação adicional da data
+    if (!pedido.getA04_Data_Pedido().matches("\\d{2}/\\d{2}/\\d{4}")) {
+        throw new IllegalArgumentException("Formato de data inválido no ModelPedido");
     }
+    pedidoDAO.atualizarPedido(
+        pedido.getA04_Codigo(),
+        pedido.getA01_Codigo_Cliente(),
+        pedido.getA04_Data_Pedido(),
+        pedido.getA04_Valor_Total()
+    );
+}
 }
